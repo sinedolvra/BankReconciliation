@@ -33,19 +33,18 @@ namespace DevelopersChallenge2.Application.Services
                 if (formFile.Length > 0)
                 {
                     var fileName = Path.GetFileName(formFile.FileName);
-                    var filePath = Path.Combine(Path.GetTempPath() + fileName + "-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss"));
-                    //var filePath = Path.GetTempFileName();
-
+                    var filePath = Path.Combine(Path.GetTempPath() + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + fileName);
+                    
                     using (var stream = File.Create(filePath))
                     {
                         await formFile.CopyToAsync(stream);
                     }
-                    PersistsOfxFile(filePath);
+                    PersistsOfxTransactions(filePath);
                 }
             }
         }
 
-        private void PersistsOfxFile(string filePath)
+        private void PersistsOfxTransactions(string filePath)
         {
             var fileName = Path.GetFileName(filePath);
             _logger.LogInformation($"Start of ofx file conversion process. {fileName}");
