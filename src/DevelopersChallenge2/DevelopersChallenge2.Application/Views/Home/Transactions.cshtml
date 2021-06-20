@@ -10,16 +10,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.TransactionType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PostedDate)
+                @Html.DisplayNameFor(model => model.Memo)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Amount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Memo)
+                @Html.DisplayNameFor(model => model.PostedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TransactionType)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.OfxFileReference)
@@ -31,16 +31,16 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TransactionType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PostedDate)
+                    @Html.DisplayFor(modelItem => item.Memo)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Amount)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Memo)
+                    @Html.DisplayFor(modelItem => item.PostedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionType)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.OfxFileReference)
