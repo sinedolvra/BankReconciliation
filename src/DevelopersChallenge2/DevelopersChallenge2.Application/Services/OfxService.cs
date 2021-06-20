@@ -33,7 +33,7 @@ namespace DevelopersChallenge2.Application.Services
                 if (formFile.Length > 0)
                 {
                     var fileName = Path.GetFileName(formFile.FileName);
-                    var filePath = Path.Combine(Path.GetTempPath() + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + fileName);
+                    var filePath = Path.Combine(Path.GetTempPath() + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + fileName);
                     
                     using (var stream = File.Create(filePath))
                     {
