@@ -1,10 +1,10 @@
-﻿using DevelopersChallenge2.Application.Domain.Entity;
-using DevelopersChallenge2.Application.Domain.Enum;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using DevelopersChallenge2.Application.Domain.Entity;
+using DevelopersChallenge2.Application.Domain.Enum;
 
 namespace DevelopersChallenge2.Application.Domain.ExtensionMethods
 {
@@ -26,36 +26,37 @@ namespace DevelopersChallenge2.Application.Domain.ExtensionMethods
             {
                 if (tag.IndexOf("<STMTTRN>") != -1)
                 {
-                    transaction = new Transaction()
-                    {
-                        Id = Guid.NewGuid().ToString()
-                    };
+                    transaction = new Transaction();
                     continue;
                 }
-                else if (tag.IndexOf("<TRNTYPE>") != -1)
+
+                if (tag.IndexOf("<TRNTYPE>") != -1)
                 {
                     transaction.TransactionType = BuildTransactionType(tag.Replace("<TRNTYPE>", "").Trim());
                     continue;
                 }
-                else if (tag.IndexOf("<DTPOSTED>") != -1)
+
+                if (tag.IndexOf("<DTPOSTED>") != -1)
                 {
                     string date = tag.Replace("<DTPOSTED>", "").Substring(0, 8);
                     DateTime postedDate = DateTime.ParseExact(date, "yyyyMMdd", CultureInfo.InvariantCulture);
                     transaction.PostedDate = postedDate;
                     continue;
                 }
-                else if (tag.IndexOf("<TRNAMT>") != -1)
+
+                if (tag.IndexOf("<TRNAMT>") != -1)
                 {
                     decimal.TryParse(tag.Replace("<TRNAMT>", ""), out decimal amount);
                     transaction.Amount = amount;
                     continue;
                 }
-                else if (tag.IndexOf("<MEMO>") != -1)
+
+                if (tag.IndexOf("<MEMO>") != -1)
                 {
                     transaction.Memo = tag.Replace("<MEMO>", "");
+                    transaction.UniqueKey = transaction.GetUniqueKey();
                 }
                 transactions.Add(transaction);
-                continue;
             }
 
             return transactions;
