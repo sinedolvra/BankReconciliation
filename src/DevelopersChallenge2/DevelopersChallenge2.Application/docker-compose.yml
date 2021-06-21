@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+   api:
+      container_name: developers_challenge
+      build:
+         context: .
+         dockerfile: src/DevelopersChallenge2/DevelopersChallenge2.Application/Dockerfile
+      ports:
+            - 5000:80
+      networks:
+         - default
+networks:
+   default:
