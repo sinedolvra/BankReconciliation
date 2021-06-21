@@ -43,7 +43,7 @@ namespace DevelopersChallenge2.Application.Controllers
 
         public async Task<IActionResult> TransactionsAsync()
         {
-            var transactions = await _transactionRepository.GetTransactionsWithoutDuplicates();
+            var transactions = await _transactionRepository.GetAllTransactions();
             return View(transactions);
         }
 
