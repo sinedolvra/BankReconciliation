@@ -22,7 +22,7 @@ namespace DevelopersChallenge2.Application.Services
             _transactionRepository = transactionRepository;
         }
 
-        public async Task ProcessOfxFiles(List<IFormFile> formFiles)
+        public async Task<List<Transaction>> ProcessOfxFiles(List<IFormFile> formFiles)
         {
             _logger.LogInformation($"Start processing {formFiles.Count} Ofx files");
 
@@ -43,33 +43,38 @@ namespace DevelopersChallenge2.Application.Services
                 transactionsGroupedByFile.Add(GetTransactionsByOfxFile(filePath));
             }
 
-            PersistsOfxTransactions(transactionsGroupedByFile);
+            var transactions = PersistsOfxTransactions(transactionsGroupedByFile);
             _logger.LogInformation($"End processing Ofx files");
+            return transactions;
         }
         
-        private List<Transaction> GetTransactionsByOfxFile(string filePath)
+        public virtual List<Transaction> GetTransactionsByOfxFile(string filePath)
         {
             var ofxFile = filePath.ToOfx();
             return ofxFile.Transactions;
         }
 
-        private void PersistsOfxTransactions(List<List<Transaction>> transactionsGroupedByFile)
+        private List<Transaction> PersistsOfxTransactions(List<List<Transaction>> transactionsGroupedByFile)
         {
             _logger.LogInformation($"Start of persistence of transactions file.");
-            if (transactionsGroupedByFile.Count > 1)
-            {
-                var transactions = RemoveDuplicatedTransactions(transactionsGroupedByFile);
-                _transactionRepository.Save(transactions);
-                return;
-            }
-            _transactionRepository.Save(transactionsGroupedByFile[0]);
+            var transactions = RemoveDuplicatedTransactions(transactionsGroupedByFile);
+            _transactionRepository.Save(transactions);
             _logger.LogInformation($"End of persistence of transactions file.");
+            return transactions;
         }
 
-        private List<Transaction> RemoveDuplicatedTransactions(List<List<Transaction>> transactionsGroupedByFile)
+        public virtual List<Transaction> RemoveDuplicatedTransactions(List<List<Transaction>> transactionsGroupedByFile)
         {
             _logger.LogInformation("Start of duplicated transaction removal");
             var transactions = new List<Transaction>();
+            if(transactionsGroupedByFile.Count == 1)
+            {
+                transactions.AddRange(transactionsGroupedByFile[0]);
+                _logger.LogInformation("End of duplicated transaction removal");
+
+                return transactions;
+            }
+
             for (var i = 0; i < transactionsGroupedByFile.Count-1; i++)
             {
                 var currentTransactions = transactionsGroupedByFile[i];
@@ -82,7 +87,6 @@ namespace DevelopersChallenge2.Application.Services
 
                 transactions.AddRange(transactionsGroupedByFile[i].Union(transactionsGroupedByFile[i+1]));
             }
-
             _logger.LogInformation("End of duplicated transaction removal");
             return transactions;
         }
