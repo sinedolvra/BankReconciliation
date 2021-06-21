@@ -34,6 +34,12 @@ namespace DevelopersChallenge2.Application.Controllers
             return View();
         }
 
+        public IActionResult DeleteTransactions()
+        {
+            _transactionRepository.DeleteAll();
+            return RedirectToAction("Transactions", "Home");
+        }
+
         [HttpPost]
         public async Task<IActionResult> UploadFiles(List<IFormFile> formFiles)
         {

@@ -8,6 +8,7 @@ namespace DevelopersChallenge2.Application.Domain.Interfaces
     {
         void Add(Transaction transaction);
         void Save(List<Transaction> transactions);
+        void DeleteAll();
         Task<List<Transaction>> GetAllTransactions();
     }
 }

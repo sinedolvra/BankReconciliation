@@ -39,5 +39,11 @@ namespace DevelopersChallenge2.Application.Repository
                 .OrderBy(x => x.PostedDate)
                 .ToListAsync();
         }
+
+        public void DeleteAll()
+        {
+            dbContext.RemoveRange(dbContext.Transactions);
+            dbContext.SaveChanges();
+        }
     }
 }
