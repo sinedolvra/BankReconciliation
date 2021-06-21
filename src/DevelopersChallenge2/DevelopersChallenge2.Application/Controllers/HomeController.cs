@@ -7,7 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using DevelopersChallenge2.Application.Controllers.Validators;
 
 namespace DevelopersChallenge2.Application.Controllers
 {
@@ -33,11 +35,13 @@ namespace DevelopersChallenge2.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadFiles(List<IFormFile> FormFiles)
+        public async Task<IActionResult> UploadFiles(List<IFormFile> formFiles)
         {
-            //TODO Validate files
-            await _ofxService.ProcessOfxFiles(FormFiles);
-
+            if (!FormFileValidator.Validate(formFiles))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            await _ofxService.ProcessOfxFiles(formFiles);
             return RedirectToAction("Transactions", "Home");
         }
 

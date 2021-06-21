@@ -86,24 +86,5 @@ namespace DevelopersChallenge2.Application.Services
             _logger.LogInformation("End of duplicated transaction removal");
             return transactions;
         }
-
-        /*private void PersistsOfxTransactions(string filePath)
-        {
-            var fileName = Path.GetFileName(filePath);
-            _logger.LogInformation($"Start of persistence of transactions {fileName} file.");
-
-            var ofxFile = filePath.ToOfx();
-            if(ofxFile.Transactions != null)
-            {
-                var transactions = ofxFile.Transactions
-                    .Select(x => { x.OfxFileReference = fileName; return x; })
-                    .ToList();
-                
-                RemoveDuplicatedTransactions(transactions);
-                _transactionRepository.Save(transactions);
-            }            
-            
-            
-        }*/
     }
 }
