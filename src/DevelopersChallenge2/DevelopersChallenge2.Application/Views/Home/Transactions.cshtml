@@ -4,25 +4,23 @@
     ViewData["Title"] = "Transactions";
 }
 
+<a class="button btn btn-danger" asp-area="" asp-controller="Home" asp-action="DeleteTransactions">Zerar registros</a>
 <h1>Transactions</h1>
 
 <table class="row-border hover order-column" id="transactionsTable">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.TransactionType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PostedDate)
+                @Html.DisplayNameFor(model => model.Memo)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Amount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Memo)
+                @Html.DisplayNameFor(model => model.PostedDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OfxFileReference)
+                @Html.DisplayNameFor(model => model.TransactionType)
             </th>
         </tr>
     </thead>
@@ -31,19 +29,16 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TransactionType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PostedDate)
+                    @Html.DisplayFor(modelItem => item.Memo)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Amount)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Memo)
+                    @Html.DisplayFor(modelItem => item.PostedDate)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.OfxFileReference)
+                    @Html.DisplayFor(modelItem => item.TransactionType)
                 </td>
             </tr>
         }

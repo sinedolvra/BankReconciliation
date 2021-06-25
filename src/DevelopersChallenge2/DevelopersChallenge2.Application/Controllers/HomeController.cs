@@ -7,7 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using DevelopersChallenge2.Application.Controllers.Validators;
 
 namespace DevelopersChallenge2.Application.Controllers
 {
@@ -32,18 +34,26 @@ namespace DevelopersChallenge2.Application.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UploadFiles(List<IFormFile> FormFiles)
+        public IActionResult DeleteTransactions()
         {
-            //TODO Validate files
-            await _ofxService.ProcessOfxFiles(FormFiles);
+            _transactionRepository.DeleteAll();
+            return RedirectToAction("Transactions", "Home");
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> UploadFiles(List<IFormFile> formFiles)
+        {
+            if (!FormFileValidator.Validate(formFiles))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            await _ofxService.ProcessOfxFiles(formFiles);
             return RedirectToAction("Transactions", "Home");
         }
 
         public async Task<IActionResult> TransactionsAsync()
         {
-            var transactions = await _transactionRepository.GetTransactionsWithoutDuplicates();
+            var transactions = await _transactionRepository.GetAllTransactions();
             return View(transactions);
         }
 

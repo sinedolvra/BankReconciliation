@@ -1,7 +1,6 @@
 ﻿using DevelopersChallenge2.Application.Domain.Entity;
 using DevelopersChallenge2.Application.Domain.ExtensionMethods;
 using DevelopersChallenge2.Application.Domain.Interfaces;
-using DevelopersChallenge2.Application.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -23,43 +22,73 @@ namespace DevelopersChallenge2.Application.Services
             _transactionRepository = transactionRepository;
         }
 
-        public async Task ProcessOfxFiles(List<IFormFile> formFiles)
+        public async Task<List<Transaction>> ProcessOfxFiles(List<IFormFile> formFiles)
         {
-            //TODO improve log
-            long size = formFiles.Sum(f => f.Length);
+            _logger.LogInformation($"Start processing {formFiles.Count} Ofx files");
 
+            var transactionsGroupedByFile = new List<List<Transaction>>();
             foreach (var formFile in formFiles)
             {
-                if (formFile.Length > 0)
-                {
-                    var fileName = Path.GetFileName(formFile.FileName);
-                    var filePath = Path.Combine(Path.GetTempPath() + fileName + "-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss"));
-                    //var filePath = Path.GetTempFileName();
+                if (formFile.Length <= 0) continue;
+                
+                var fileName = Path.GetFileName(formFile.FileName);
+                var filePath = Path.Combine(Path.GetTempPath() + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + fileName);
 
-                    using (var stream = File.Create(filePath))
-                    {
-                        await formFile.CopyToAsync(stream);
-                    }
-                    PersistsOfxFile(filePath);
+                await using (var stream = File.Create(filePath))
+                {
+                    _logger.LogInformation($"Persisting the {fileName} file");
+                    await formFile.CopyToAsync(stream);
                 }
+
+                transactionsGroupedByFile.Add(GetTransactionsByOfxFile(filePath));
             }
+
+            var transactions = PersistsOfxTransactions(transactionsGroupedByFile);
+            _logger.LogInformation($"End processing Ofx files");
+            return transactions;
+        }
+        
+        public virtual List<Transaction> GetTransactionsByOfxFile(string filePath)
+        {
+            var ofxFile = filePath.ToOfx();
+            return ofxFile.Transactions;
         }
 
-        private void PersistsOfxFile(string filePath)
+        private List<Transaction> PersistsOfxTransactions(List<List<Transaction>> transactionsGroupedByFile)
         {
-            var fileName = Path.GetFileName(filePath);
-            _logger.LogInformation($"Start of ofx file conversion process. {fileName}");
+            _logger.LogInformation($"Start of persistence of transactions file.");
+            var transactions = RemoveDuplicatedTransactions(transactionsGroupedByFile);
+            _transactionRepository.Save(transactions);
+            _logger.LogInformation($"End of persistence of transactions file.");
+            return transactions;
+        }
 
-            var ofxFile = filePath.ToOfx();
-            if(ofxFile.Transactions != null)
+        public virtual List<Transaction> RemoveDuplicatedTransactions(List<List<Transaction>> transactionsGroupedByFile)
+        {
+            _logger.LogInformation("Start of duplicated transaction removal");
+            var transactions = new List<Transaction>();
+            if(transactionsGroupedByFile.Count == 1)
             {
-                var transactions = ofxFile.Transactions
-                    .Select(x => { x.OfxFileReference = fileName; return x; })
-                    .ToList();
-                _transactionRepository.Save(transactions);
-            }            
-            
-            _logger.LogInformation($"End of ofx file conversion process. {fileName}");
+                transactions.AddRange(transactionsGroupedByFile[0]);
+                _logger.LogInformation("End of duplicated transaction removal");
+
+                return transactions;
+            }
+
+            for (var i = 0; i < transactionsGroupedByFile.Count-1; i++)
+            {
+                var currentTransactions = transactionsGroupedByFile[i];
+                var nextTransactions = transactionsGroupedByFile[i+1];
+
+                foreach (var transaction in currentTransactions)
+                {
+                    nextTransactions.RemoveAll(x => x.UniqueKey == transaction.UniqueKey);
+                }
+
+                transactions.AddRange(transactionsGroupedByFile[i].Union(transactionsGroupedByFile[i+1]));
+            }
+            _logger.LogInformation("End of duplicated transaction removal");
+            return transactions;
         }
     }
 }
