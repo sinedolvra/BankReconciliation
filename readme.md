@@ -2,8 +2,8 @@
 
 
 <p align="center">
-  <a href="https://github.com/denis-olvra/DevelopersChallenge2/actions/workflows/dotnet.yml">
-    <img src="https://github.com/denis-olvra/DevelopersChallenge2/actions/workflows/dotnet.yml/badge.svg">
+  <a href="https://github.com/sinedolvra/BankReconciliation/actions/workflows/dotnet.yml">
+    <img src="https://github.com/sinedolvra/BankReconciliation/actions/workflows/dotnet.yml/badge.svg">
   </a>
   <a href="https://dotnet.microsoft.com/download">
     <img src="https://img.shields.io/badge/.NET%20Core-v5.0%2B-blueviolet">
@@ -18,7 +18,7 @@
 1. Instale o .NET Core v5+ <a href="https://dotnet.microsoft.com/download"><img src="https://img.shields.io/badge/.NET%20Core-v5.0%2B-blueviolet"></a>
 2. Clone o repositório
 ```sh
-git clone git@github.com:denis-olvra/DevelopersChallenge2.git
+git clone git@github.com:sinedolvra/BankReconciliation.git
 ```
 3. Restaure os pacotes da solução
 ```sh
